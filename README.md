@@ -10,6 +10,17 @@ Codes: Dip_slip_Okada_Error and Strike_slip_Okada_Error contain three sections
 
 3. Third Section: Misfit analysis between the observed and modelled GPS velocities for dip-slip or strike-slip faults (Variable: Slip rate & Locking Depth ; Constant: Dip & Vertical Offset uY)
 
-Writes two files containing the RMSE values and Okada Locking curve 
 
 
+
+4. How to Run (Inputs)
+
+   Load the GPS horizontal velocity file (At least contain Local distance from fault trace (in km), Fault normal/parallel velocity (in mm), and Error values) 
+   
+   Make sure to normalize the "Fault normal/parallel velocity" from zero.
+   
+   Input the number of observation points
+   
+   Dip of the fault plane (Prior knowledge is needed)
+   
+5. Run the code to obtain the output files (Two files containing the RMSE values and Okada Locking curve)
