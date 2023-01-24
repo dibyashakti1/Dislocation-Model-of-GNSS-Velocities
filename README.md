@@ -30,6 +30,8 @@ Matlab Files: Dip_slip_Okada_Error and Strike_slip_Okada_Error
 
 
 
+
+
 % The matlab codes help to model the observed velocities from GPS stations of both strike-slip and thrust faults by analyzing misfit between the Slip rate, Locking Depth, Fault Dip, and Vertical offset (uY)
 
 Matlab Files: Dip_slip_Okada_Error2 and Strike_slip_Okada_Error2
@@ -47,7 +49,4 @@ Matlab Files: Dip_slip_Okada_Error2 and Strike_slip_Okada_Error2
    Make sure to normalize the "Fault normal/parallel velocity" from zero.
    
    Input the number of observation points
-   
-   
-
-
+ 
