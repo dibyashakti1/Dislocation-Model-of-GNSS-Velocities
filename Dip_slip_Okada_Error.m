@@ -28,6 +28,8 @@ ylim([0,250])
 % hold on 
 % plot(x/1e3,uY,'r','linewidth',1)
 
+ ![image](https://user-images.githubusercontent.com/123026357/214440217-79744d7f-b800-4b49-b80d-a0472b5c319b.png)
+
 %%
 
 % Generate Okada dislocation (slip rate deficit curve)
