@@ -2,9 +2,9 @@
 
 Dibyashakti Panda, January 2023
 
-% The matlab codes help to model the observed velocities from GPS stations of both strike-slip and thrust faults by analyzing misfit between the Slip rate & Locking Depth
+**The matlab codes help to model the observed velocities from GPS stations of both strike-slip and thrust faults by analyzing misfit between the Slip rate & Locking Depth**
 
-Matlab Files: Dip_slip_Okada_Error and Strike_slip_Okada_Error
+**Matlab Files**: Dip_slip_Okada_Error and Strike_slip_Okada_Error
 
 
 1. First Section: Visualizes horizontal geodetic motion at surface
@@ -29,12 +29,9 @@ Matlab Files: Dip_slip_Okada_Error and Strike_slip_Okada_Error
 
 
 
+**The matlab codes help to model the observed velocities from GPS stations of both strike-slip and thrust faults by analyzing misfit between the Slip rate, Locking Depth, Fault Dip, and Vertical offset (uY)**
 
-
-
-% The matlab codes help to model the observed velocities from GPS stations of both strike-slip and thrust faults by analyzing misfit between the Slip rate, Locking Depth, Fault Dip, and Vertical offset (uY)
-
-Matlab Files: Dip_slip_Okada_Error2 and Strike_slip_Okada_Error2
+**Matlab Files**: Dip_slip_Okada_Error2 and Strike_slip_Okada_Error2
 
 1. First Section: Visualizes horizontal geodetic motion at surface
 
