@@ -55,6 +55,7 @@ uY(Y>0)=uY(Y>0)+(B*cosd(dip1));
 plot(y/1e3,uY,'r','linewidth',1)
 
 hold on
+
 %%
 
 % Misfit analysis between observed and modelled GPS velocities for dip-slip faults
