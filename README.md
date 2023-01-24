@@ -46,4 +46,7 @@ Dibyashakti Panda, January 2023
    Make sure to normalize the "Fault normal/parallel velocity" from zero.
    
    Input the number of observation points
+   
+   ![image](https://user-images.githubusercontent.com/123026357/214436303-241d2178-05ae-4c60-8c8a-0435261d04cb.png)
+
  
