@@ -33,9 +33,9 @@ Dibyashakti Panda, January 2023
 
 **Matlab Files**: Dip_slip_Okada_Error2 and Strike_slip_Okada_Error2
 
-1. First Section: Visualizes horizontal geodetic motion at surface
+1. First Section: Same as previous set of routines
 
-2. Second Section: Generates the Okada dislocation model curve (or the slip rate deficit curve)
+2. Second Section: Same as previous set of routines
 
 3. Third Section: Misfit analysis between the observed and modelled GPS velocities for dip-slip or strike-slip faults (Variable: Slip rate, Locking Depth, Fault Dip & Vertical Offset uY)
 
