@@ -65,7 +65,7 @@ for i=0:1000:40000   % Locking depth (in meters)
 
 fault=[0,1e9; 0,-1e9];
 dip1=89;             % Dip of the fault
-dip=89*pi/180;
+dip=dip1*pi/180;
 depth=[0e3,i];
 B=j;
 type='S';
