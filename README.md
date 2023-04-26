@@ -32,7 +32,7 @@ Dibyashakti Panda, January 2023
 ![3](https://user-images.githubusercontent.com/123026357/234674028-24081cfe-8104-4de6-ab78-9888b6f62a17.jpg)
 
 
-**Best fit Okada model ([X-axis: Distance (km), Y-axis: Slip rate (mm/yr)])**
+**Best fit Okada model to the observed data ([X-axis: Distance (km), Y-axis: Slip rate (mm/yr)])**
 ![5](https://user-images.githubusercontent.com/123026357/234674703-3cf85c7d-ef76-4e0b-9ce9-e8d34e32fb58.jpg)
 
 
