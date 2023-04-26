@@ -36,7 +36,6 @@ Dibyashakti Panda, January 2023
 ![5](https://user-images.githubusercontent.com/123026357/234674703-3cf85c7d-ef76-4e0b-9ce9-e8d34e32fb58.jpg)
 
 
-
 **4. How to Run (Inputs)**
 
    Load the GPS horizontal velocity file (At least contain Local distance from fault trace (in km), Fault normal/parallel velocity (in mm), and Error values) 
