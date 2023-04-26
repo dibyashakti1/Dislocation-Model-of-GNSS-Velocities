@@ -48,5 +48,4 @@ Dibyashakti Panda, January 2023
    Input the number of observation points
    
 
-![himalaya_segment4](https://user-images.githubusercontent.com/123026357/234671155-8cab485a-9353-467d-8b05-a808ec0ce02c.jpg)
 
