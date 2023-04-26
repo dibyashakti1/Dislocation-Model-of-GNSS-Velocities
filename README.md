@@ -16,6 +16,7 @@ Dibyashakti Panda, January 2023
 ![1](https://user-images.githubusercontent.com/123026357/234672044-90b6a743-19da-4df8-aa35-60ea0d9a7d6c.jpg)
 
 
+
 **2. Second Section: Generates the Okada dislocation model curve (or the slip rate deficit curve)**
 
 
