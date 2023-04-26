@@ -12,7 +12,7 @@ Dibyashakti Panda, January 2023
 **1. First Section: Visualizes horizontal geodetic motion at surface**
 
 
-**Horizontal geodetic motion at surface for a Dip slip fault**
+**Horizontal geodetic motion at surface for a Synthetic Dip slip fault**
 ![1](https://user-images.githubusercontent.com/123026357/234672044-90b6a743-19da-4df8-aa35-60ea0d9a7d6c.jpg)
 
 
@@ -27,11 +27,11 @@ Dibyashakti Panda, January 2023
 **3. Third Section: Misfit analysis between the observed and modelled GPS velocities for dip-slip or strike-slip faults (Variable: Slip rate & Locking Depth ; Constant: Dip & Vertical Offset uY)**
 
 
-**Misfit between Slip rate and Locking Depth [X-axis: Slip (mm), Y-axis: Locking Depth(KM)]**
+**Misfit between Slip rate and Locking Depth [X-axis: Slip (mm/yr), Y-axis: Locking Depth(km)]**
 ![3](https://user-images.githubusercontent.com/123026357/234674028-24081cfe-8104-4de6-ab78-9888b6f62a17.jpg)
 
 
-**Best fit Okada model (Fixed Dip and Varying Slip rate, Locking Depth)**
+**Best fit Okada model ([X-axis: Distance (km), Y-axis: Slip rate (mm/yr)])**
 ![5](https://user-images.githubusercontent.com/123026357/234674703-3cf85c7d-ef76-4e0b-9ce9-e8d34e32fb58.jpg)
 
 
