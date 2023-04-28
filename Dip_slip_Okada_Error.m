@@ -1,4 +1,14 @@
-clear
+% The matlab code help to model the observed velocities from GPS stations across thrust faults 
+% by analyzing misfit between the fault Slip rate & Locking Depth (Based on methods by Okada 1992)
+
+% Misfit analysis between the observed and modelled GPS velocities for dip-slip faults 
+% (Variable: Slip rate & Locking Depth ; Constant: Dip & Vertical Offset uY)
+
+% Last modified on: 26 April, 2023 by Dibyashakti
+
+
+clear all
+close all
 clc
 
 %%
@@ -55,7 +65,6 @@ uY(Y>0)=uY(Y>0)+(B*cosd(dip1));
 plot(y/1e3,uY,'r','linewidth',1)
 
 hold on
-
 %%
 
 % Misfit analysis between observed and modelled GPS velocities for dip-slip faults
@@ -68,6 +77,8 @@ error=Fault_slip(:,3);
 % errorbar(dist,slip,error)
 
 RMSE1=[];
+
+fprintf('Estimating RMSE by varying fault slip rate and locking depth...\n')
 
 for i=0:500:30000       % Locking depth (in meters) 
     for j=0:0.50:20     % Fault slip rate (in mm)
@@ -105,8 +116,12 @@ uY(y>0)=uY(y>0)+(B*cosd(dip1));
      RMSE1 = [RMSE1;i/1000,j,(1/nobs)*sqrt(sum((slip(:)-uY(:)).^2./error.^2))];  % RMSE estimation between observed and modelled GPS velocities
     end 
     uY=[];
+
 end
 
+fprintf('Estimating RMSE by varying fault slip rate and locking depth...Done\n')
+
+%%
 
 x2=RMSE1(:,1);
 y2=RMSE1(:,2);
@@ -157,11 +172,13 @@ title(['Dip =  ' num2str(dip1), ' ; Locking Depth = ' num2str(minX), ' ; Slip = 
 
 
 % Write RMSE and Okada Locking curve files
+fprintf('Saving file: Misfit between fault slip rate and locking depth...Done\n')
 % save('DS_RMSE.txt','RMSE1','-ascii');
 header1={'Locking_Depth_km','Slip_mm','rmse'}; 
 file1=[header1;num2cell(RMSE1)];
 writecell(file1,'DS_RMSE.txt');
 
+fprintf('Saving file: Slip rate deficit curve...Done\n')
 % save('DS_Okada_curve.txt','[(y/1000)',uY']','-ascii');
 header2={'Distance_km','Slip_mm'}; 
 file2=[header2;num2cell([(y/1000)',uY'])];
