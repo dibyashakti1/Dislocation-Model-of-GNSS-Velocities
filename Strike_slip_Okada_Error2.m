@@ -1,4 +1,14 @@
-clear
+% The matlab code help to model the observed velocities from GPS stations across strike-slip faults 
+% by analyzing misfit between the fault Slip rate, Locking Depth, Fault Dip, and Vertical offset (Based on methods by Okada 1992)
+
+% Misfit analysis between the observed and modelled GPS velocities for strike-slip faults 
+% (Variable: Slip rate, Locking Depth, Fault Dip & Vertical Offset uY)
+
+% Last modified on: 26 April, 2023 by Dibyashakti
+
+
+clear all
+close all
 clc
 
 %%
@@ -59,6 +69,8 @@ hold off
 
 RMSE1=[];
 
+fprintf('Estimating RMSE by varying fault Slip rate, Locking Depth, Dip, Vertical Offset...\n')
+
 for i=0:1000:30000   % Locking depth (in meters)
     for j=0:30       % Fault slip rate (in mm)
         for k=70:89  % Fault Dip (in degrees)
@@ -92,6 +104,9 @@ uY=[];
     end
 end
 
+fprintf('Estimating RMSE by varying fault Slip rate, Locking Depth, Dip, Vertical Offset...Done\n')
+
+%%
 
 x2=RMSE1(:,1);
 y2=RMSE1(:,2);
@@ -131,7 +146,4 @@ xlim([-200,200])
 legend ('location','northwest')
 caption = sprintf('Dip = %g, Locking Depth = %g km, Slip = %g mm/yr, uY = %g mm/yr', dip2, depth2, slip2, Vert_offset);
 title(caption, 'FontSize', 10);
-
-
-
 
