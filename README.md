@@ -1,4 +1,4 @@
-# Dislocation-Model-of-GPS-Velocities
+# Dislocation-Model-of-GNSS-Velocities
 
 Dibyashakti Panda, January 2023
 
