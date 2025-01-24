@@ -4,102 +4,137 @@
 % Misfit analysis between the observed and modelled GPS velocities for strike-slip faults 
 % (Variable: Slip rate, Locking Depth, Fault Dip & Vertical Offset uY)
 
-% Last modified on: 26 April, 2023 by Dibyashakti
-
+% Last modified on: 23 Jan, 2025 by D. Panda
 
 clear all
 close all
 clc
+addpath(genpath(pwd))
 
-%%
-% To visualize motion at surface
-
-fault=[0,-1e9; 0,1e9];
-dip=89*pi/180;
-depth=[0e3,15e3];
-B=20;
-type='S';
-Mu=30e9;
-Poisson=0.25;
-
-nobs=100;
-x=linspace(-500e3,500e3,nobs*2);
-y=0*x;
-[X,Y]=meshgrid(x,y);
-Z=0*X-0e15;
-
-[uX,uY,uZ]=Okada1992(X,Y,Z,fault,dip,depth,B,type,Mu,Poisson);
-
-% uY(X<0)=uY(X<0)-(B/2);
-% uY(X>0)=uY(X>0)+(B/2);
-figure(1),clf
-quiver(x/1e3,y/1e3,uX,uY,0,'color','k')
-xlim([-500,500])
-ylim([-20,20])
-hold off
-
-%%
-
-% Generate Okada dislocation (slip rate deficit curve)
-nobs=100;
-x=linspace(-100e3,100e3,nobs);
-y=0*x+0;
-z=0*x;
-
-[uX,uY,uZ]=Okada1992(x,y,z,fault,dip,depth,B,type,Mu,Poisson);
-
-uY(x<0)=uY(x<0)-(B/2);
-uY(x>0)=uY(x>0)+(B/2);
-figure(2),clf
-plot(x/1e3,uY+(B/2),'r','linewidth',1)
-
-hold off
 %%
 
 % Misfit analysis between observed and modelled GPS velocities for dip-slip faults
 % (Variable: Slip rate, Locking Depth, Dip, Vertical Offset uY)
 
-Fault_slip=load('SF_profile_Vigny_sites.txt');
-dist=Fault_slip(:,1);
-slip=Fault_slip(:,2);
-error=Fault_slip(:,3);
-% errorbar(dist,slip,error)
+[file,location] = uigetfile('*');
+
+Fault_slip=readtable(fullfile(location,file));
+
+if width(Fault_slip)<3
+    error('File should contain at least 3 columns (Distance, Displacement, Error)')
+else
+    disp("Input File contains 3 columns > Distance, Displacement, Error")
+Fault_slip=sortrows(Fault_slip);
+Fault_slip=sortrows(Fault_slip);
+dist=table2array(Fault_slip(:,1));
+slip=table2array(Fault_slip(:,2));
+error=table2array(Fault_slip(:,3));
+plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
+hold on
+errorbar(dist,slip,error,'.b','DisplayName','Observed')
+title('Observed Displacement (mm/year)')
+% text(gps_nrsc.Long,gps_nrsc.Lat,gps_nrsc.Station,'Vert','bottom', 'Horiz','left','FontSize',7)
+end
+%%
+
+menuop = menu('EXCLUSION OF ONE OR MORE POINTS FROM CALCULATIONS','YES','NO');
+
+if menuop ==1
+
+    plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
+    hold on
+    errorbar(dist,slip,error,'.b','DisplayName','Observed')
+
+    [rx,ry]=getpts;
+    dist_range=2;
+    slip_range=2;
+    id=find(dist<=fix(rx)+dist_range & dist>=fix(rx)-dist_range);
+    id2=find(slip<=fix(ry)+slip_range & slip>=fix(ry)-slip_range);
+
+    if length(id)<length(id2)
+        
+        plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
+        hold on
+        plot(dist(id),slip(id),'-rx','linewidth',1,'DisplayName','Observed')
+
+        dist_new=dist;
+        dist_new(id,:)=[];
+
+        slip_new=slip;
+        slip_new(id,:)=[];
+
+        error_new=error;
+        error_new(id,:)=[];
+
+    else
+
+        dist_new=dist;
+        dist_new(id2,:)=[];
+
+        slip_new=slip;
+        slip_new(id2,:)=[];
+
+        error_new=error;
+        error_new(id2,:)=[];
+
+    figure (1)
+    plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
+    hold on
+    plot(dist(id2),slip(id2),'-rx','linewidth',1,'DisplayName','Observed')
+
+    end
+
+else
+
+    dist_new=dist;
+    slip_new=slip;
+    error_new=error;
+
+end
 
 hold off
+figure (2)
+plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Actual Stations')
+hold on
+plot(dist_new,slip_new,'-rdiamond','linewidth',1,'DisplayName','After Removal')
+legend
 
-RMSE1=[];
+%%  Estimate the RMSE misfit
+
+RMSE1 = [];
+type='S';
+Mu = 30e9;
+Poisson = 0.25;
+nobs = length(dist_new);
 
 fprintf('Estimating RMSE by varying fault Slip rate, Locking Depth, Dip, Vertical Offset...\n')
-
-for i=0:1000:30000   % Locking depth (in meters)
-    for j=0:30       % Fault slip rate (in mm)
-        for k=70:89  % Fault Dip (in degrees)
+tic
+for i=0:500:40000     % Locking depth (in meters) 
+    for j=0:1:25       % Fault slip rate (in mm)
+        for k=1:45     % Fault Dip (in degrees)
             for m=-5:5 % Fault slip vertical offset (in mm)
-
-fault=[0,1e9; 0,-1e9];
+            
+fault=[-1e9,0;1e9,0];
 dip1=k;
-dip=k*pi/180;
+dip=(180-dip1)*pi/180;
 depth=[0e3,i];
 B=j;
-type='S';
-Mu=30e9;
-Poisson=0.25;
-nobs=18;
-x=dist*1e3;
-y=0*x+0;
-z=0*x;
+y=dist_new*1e3;
+x=0*y;
+z=0*y;
 
 [uX,uY,uZ]=Okada1992(x,y,z,fault,dip,depth,B,type,Mu,Poisson);
-
-uY(x<0)=uY(x<0)-(B/2);
-uY(x>0)=uY(x>0)+(B/2);
-% plot(x/1e3,uY+(B/2),'r','linewidth',1)
-uY=uY+(B/2);
+uY(y>0)=uY(y>0)+(B*cosd(dip1));
 uY=uY+m;
 
-     RMSE1 = [RMSE1;i/1000,j,k,m,(1/nobs)*sqrt(sum((slip(:)-uY(:)).^2./error.^2))];  % RMSE estimation between observed and modelled GPS velocities
-uY=[]; 
-            end 
+% RMSE estimation between observed and modelled GPS velocities
+%    RMSE1 = [RMSE1;i/1000,(i/1000)/sind(dip),j,sqrt(mean((slip(:)-uY(:)).^2))];
+    RMSE1 = [RMSE1;i/1000,j,k,m,(1/nobs)*sqrt(sum((slip_new(:)-uY(:)).^2./error_new.^2))];
+
+            end
+
+            uY=[];
+
         end
     end
 end
@@ -121,28 +156,28 @@ dip2=z2(minError);
 dip3=(180-dip2)*pi/180;
 Vert_offset=p1(minError);
 
-
 figure(1),clf
-[uX,uY,uZ]=Okada1992(x,y,z,fault,dip,[0,depth2*1e3],slip2,type,Mu,Poisson);
-uY(x>0)=uY(x>0)+(slip2);
-plot(x/1e3,uY+Vert_offset,'-rx','linewidth',1,'DisplayName','Modelled')
+[uX,uY,uZ]=Okada1992(x,y,z,fault,dip3,[0,depth2*1e3],slip2,type,Mu,Poisson);
+uY(y>0)=uY(y>0)+(slip2*cosd(dip2));
+plot(y/1e3,uY+Vert_offset,'-bx','linewidth',1,'DisplayName','Modelled')
 hold on
 errorbar(dist,slip,error,'DisplayName','Observed')
-xlim([-200,200])
+xlim([-300,300])
 legend ('location','northwest')
+
 
 figure(2),clf
 nobs=200;
-x=linspace(-500e3,500e3,nobs);
-y=0*x+0;
-z=0*x;
-[uX,uY,uZ]=Okada1992(x,y,z,fault,dip,[0,depth2*1e3],slip2,type,Mu,Poisson);
-uY(x>0)=uY(x>0)+(slip2);
+y=linspace(-500e3,500e3,nobs*2);
+x=0*y;
+z=0*y;
+[uX,uY,uZ]=Okada1992(x,y,z,fault,dip3,[0,depth2*1e3],slip2,type,Mu,Poisson);
+uY(y>0)=uY(y>0)+(slip2*cosd(dip2));
 
-legend(plot(x/1e3,uY+Vert_offset,'g','linewidth',1,'DisplayName','Best Fit'))
+legend(plot(y/1e3,uY+Vert_offset,'g','linewidth',1,'DisplayName','Best Fit'))
 hold on
 errorbar(dist,slip,error,'DisplayName','Observed')
-xlim([-200,200])
+xlim([-300,300])
 legend ('location','northwest')
 caption = sprintf('Dip = %g, Locking Depth = %g km, Slip = %g mm/yr, uY = %g mm/yr', dip2, depth2, slip2, Vert_offset);
 title(caption, 'FontSize', 10);
