@@ -1,126 +1,140 @@
-% The matlab code help to model the observed velocities from GPS stations across thrust faults 
+% The matlab code help to model the observed velocities from GPS stations across strike-slip faults 
 % by analyzing misfit between the fault Slip rate, Locking Depth, Fault Dip, and Vertical offset (Based on methods by Okada 1992)
 
 % Misfit analysis between the observed and modelled GPS velocities for dip-slip faults 
 % (Variable: Slip rate, Locking Depth, Fault Dip & Vertical Offset uY)
 
-% Last modified on: 26 April, 2023 by Dibyashakti
-
+% Last modified on: 23 Jan, 2025 by D. Panda
 
 clear all
 close all
 clc
+addpath(genpath(pwd))
 
-%%
-
-% To visualize motion at surface
-
-fault=[0,0;5000e3,0];
-dip1=7;
-dip=(180-dip1)*pi/180;
-depth=[0e3,20e3];
-B=20;
-type='D';
-Mu=30e9;
-Poisson=0.25;
-
-nobs=100;
-x=linspace(-500e3,500e3,nobs*2);
-y=1e3*[ 100 ];
-[X,Y]=meshgrid(x,y);
-Z=0*X-0e3;
-
-[uX,uY,uZ]=Okada1992(X,Y,Z,fault,dip,depth,B,type,Mu,Poisson);
-
-quiver(x/1e3,y/1e3,uX,uY,1,'color','k')
-xlim([-600,600])
-ylim([0,250])
-hold off 
-plot(x/1e3,uY,'r','linewidth',1)
-
-%%
-
-% Generate Okada dislocation (slip rate deficit curve)
-fault=[-1e9,0;1e9,0];
-dip1=10;
-dip=(180-dip1)*pi/180;
-depth=[0e3,18e3];
-B=13;
-type='D';
-Mu=30e9;
-Poisson=0.25;
-
-nobs=100;
-y=linspace(-500e3,500e3,nobs*2);
-x=1e3*[500];
-[X,Y]=meshgrid(x,y);
-Z=0*X-0e3;
-
-[uX,uY,uZ]=Okada1992(X,Y,Z,fault,dip,depth,B,type,Mu,Poisson);
-
-% uY(Y<0)=uY(Y<0)+(B/2);
-% uY(Y>0)=uY(Y>0)-(B/2);
-
-uY(Y>0)=uY(Y>0)+(B*cosd(dip1));
-plot(y/1e3,uY,'r','linewidth',1)
-
-hold on
 %%
 
 % Misfit analysis between observed and modelled GPS velocities for dip-slip faults
 % (Variable: Slip rate, Locking Depth, Dip, Vertical Offset uY)
 
-Fault_slip=load('Dauki_test.txt');
-dist=Fault_slip(:,1);
-slip=Fault_slip(:,2);
-error=Fault_slip(:,3);
-% errorbar(dist,slip,error)
+[file,location] = uigetfile('*');
 
-RMSE1=[];
+Fault_slip=readtable(fullfile(location,file));
+
+if width(Fault_slip)<3
+    error('File should contain at least 3 columns (Distance, Displacement, Error)')
+else
+    disp("Input File contains 3 columns > Distance, Displacement, Error")
+
+Fault_slip=sortrows(Fault_slip);
+dist=table2array(Fault_slip(:,1));
+slip=table2array(Fault_slip(:,2));
+error=table2array(Fault_slip(:,3));
+plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
+hold on
+errorbar(dist,slip,error,'.b','DisplayName','Observed')
+title('Observed Displacement (mm/year)')
+% text(gps_nrsc.Long,gps_nrsc.Lat,gps_nrsc.Station,'Vert','bottom', 'Horiz','left','FontSize',7)
+end
+%%
+
+menuop = menu('EXCLUSION OF ONE OR MORE POINTS FROM CALCULATIONS','YES','NO');
+
+if menuop ==1
+
+    plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
+    hold on
+    errorbar(dist,slip,error,'.b','DisplayName','Observed')
+
+    [rx,ry]=getpts;
+    dist_range=2;
+    slip_range=2;
+    id=find(dist<=fix(rx)+dist_range & dist>=fix(rx)-dist_range);
+    id2=find(slip<=fix(ry)+slip_range & slip>=fix(ry)-slip_range);
+
+    if length(id)<length(id2)
+        
+        plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
+        hold on
+        plot(dist(id),slip(id),'-rx','linewidth',1,'DisplayName','Observed')
+
+        dist_new=dist;
+        dist_new(id,:)=[];
+
+        slip_new=slip;
+        slip_new(id,:)=[];
+
+        error_new=error;
+        error_new(id,:)=[];
+
+    else
+
+        dist_new=dist;
+        dist_new(id2,:)=[];
+
+        slip_new=slip;
+        slip_new(id2,:)=[];
+
+        error_new=error;
+        error_new(id2,:)=[];
+
+    figure (1)
+    plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
+    hold on
+    plot(dist(id2),slip(id2),'-rx','linewidth',1,'DisplayName','Observed')
+
+    end
+
+else
+
+    dist_new=dist;
+    slip_new=slip;
+    error_new=error;
+
+end
+
+hold off
+figure (2)
+plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Actual Stations')
+hold on
+plot(dist_new,slip_new,'-rdiamond','linewidth',1,'DisplayName','After Removal')
+legend
+
+%%  Estimate the RMSE misfit
+
+RMSE1 = [];
+type='D';
+Mu = 30e9;
+Poisson = 0.25;
+nobs = length(dist_new);
 
 fprintf('Estimating RMSE by varying fault Slip rate, Locking Depth, Dip, Vertical Offset...\n')
-
-for i=0:1000:20000     % Locking depth (in meters) 
-    for j=0:1:20       % Fault slip rate (in mm)
+tic
+for i=0:500:40000     % Locking depth (in meters)
+    for j=0:1:25       % Fault slip rate (in mm)
         for k=1:45     % Fault Dip (in degrees)
             for m=-5:5 % Fault slip vertical offset (in mm)
-            
-
-fault=[-1e9,0;1e9,0];
-dip1=k;
-dip=(180-dip1)*pi/180;
-depth=[0e3,i];
-B=j;
-type='D';
-Mu=30e9;
-Poisson=0.25;
-nobs=16;
-% y=linspace(-500e3,500e3,nobs);
-% x=1e3*[500];
-y=dist*1e3;
-x=0*y;
-z=0*y;
-
-[uX,uY,uZ]=Okada1992(x,y,z,fault,dip,depth,B,type,Mu,Poisson);
-
-uY(y>0)=uY(y>0)+(B*cosd(dip1));
-uY=uY+m;
-%plot(y/1e3,uY,'-rx','linewidth',1)
-
-% hold on
-
-% Fault_slip=load('Detachment_sites.txt');
-% dist=Fault_slip(:,1);
-% slip=Fault_slip(:,2);
-% error=Fault_slip(:,3);
-% errorbar(dist,slip,error)
-
-%    RMSE1 = [RMSE1;i/1000,(i/1000)/sind(dip),j,sqrt(mean((slip(:)-uY(:)).^2))];
-     RMSE1 = [RMSE1;i/1000,j,k,m,(1/nobs)*sqrt(sum((slip(:)-uY(:)).^2./error.^2))];  % RMSE estimation between observed and modelled GPS velocities
-    end 
-    uY=[]; 
-end
-end
+                
+                fault=[-1e9,0;1e9,0];
+                dip1=k;
+                dip=(180-dip1)*pi/180;
+                depth=[0e3,i];
+                B=j;
+                y=dist_new*1e3;
+                x=0*y;
+                z=0*y;
+                
+                [uX,uY,uZ]=Okada1992(x,y,z,fault,dip,depth,B,type,Mu,Poisson);
+                uY(y>0)=uY(y>0)+(B*cosd(dip1));
+                uY=uY+m;
+                
+                % RMSE estimation between observed and modelled GPS velocities
+                %    RMSE1 = [RMSE1;i/1000,(i/1000)/sind(dip),j,sqrt(mean((slip(:)-uY(:)).^2))];
+                RMSE1 = [RMSE1;i/1000,j,k,m,(1/nobs)*sqrt(sum((slip_new(:)-uY(:)).^2./error_new.^2))];
+                
+            end
+            uY=[];
+        end
+    end
 end
 
 fprintf('Estimating RMSE by varying fault Slip rate, Locking Depth, Dip, Vertical Offset...Done\n')
