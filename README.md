@@ -1,4 +1,4 @@
-# Okada-Dislocation-Model-of-GPS-Velocities
+# Dislocation-Model-of-GPS-Velocities
 
 Dibyashakti Panda, January 2023
 
