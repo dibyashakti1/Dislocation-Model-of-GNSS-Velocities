@@ -144,7 +144,7 @@ for i=0:500:40000     % Locking depth (in meters)
         end
     end
 end
-
+toc
 fprintf('Estimating RMSE by varying fault Slip rate, Locking Depth, Dip, Vertical Offset...Done\n')
 
 %%
