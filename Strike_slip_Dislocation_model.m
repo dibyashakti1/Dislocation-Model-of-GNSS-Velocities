@@ -7,7 +7,7 @@
 % Input: File must contain three columns (atleast) 
 % Distance from Fault Trace, Displacement, Uncertainity
 
-% Last modified on: 21 Jan, 2025 by D. Panda
+% Last modified on: 24 Mar, 2025 by D. Panda
 
 
 clear all
@@ -25,6 +25,8 @@ if width(Fault_slip)<3
     error('File should contain at least 3 columns (Distance, Displacement, Error)')
 else
     disp("Input File contains 3 columns > Distance, Displacement, Error")
+
+%% Define the variables        
 Fault_slip=sortrows(Fault_slip);
 dist=table2array(Fault_slip(:,1));
 slip=table2array(Fault_slip(:,2));
@@ -37,51 +39,58 @@ title('Observed Displacement (mm/year)')
 end
 %%
 
+dist_new = dist;
+slip_new = slip;
+error_new = error;
+
 menuop = menu('EXCLUSION OF ONE OR MORE POINTS FROM CALCULATIONS','YES','NO');
 
 if menuop ==1
-
+    
+    figure(1)
     plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
     hold on
     errorbar(dist,slip,error,'.b','DisplayName','Observed')
 
-    [rx,ry]=getpts;
+    [rx,ry]=getpts(figure(1));
     dist_range=2;
     slip_range=2;
-    id=find(dist<=fix(rx)+dist_range & dist>=fix(rx)-dist_range);
-    id2=find(slip<=fix(ry)+slip_range & slip>=fix(ry)-slip_range);
-
-    if length(id)<length(id2)
+    
+    for k = 1:length(rx)
+        id = [];
+        id2 = [];
+        id = find(dist<=fix(rx(k))+dist_range & dist>=fix(rx(k))-dist_range);
+        id2 = find(slip<=fix(ry(k))+slip_range & slip>=fix(ry(k))-slip_range);
+        if k > 1
+            id = id - (k-1);
+        end
         
-        plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
-        hold on
-        plot(dist(id),slip(id),'-rx','linewidth',1,'DisplayName','Observed')
+        if length(id)<length(id2)
+            
+            plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
+            hold on
+            plot(dist(id),slip(id),'-rx','linewidth',1,'DisplayName','Observed')
 
-        dist_new=dist;
         dist_new(id,:)=[];
 
-        slip_new=slip;
         slip_new(id,:)=[];
 
-        error_new=error;
         error_new(id,:)=[];
 
     else
 
-        dist_new=dist;
         dist_new(id2,:)=[];
 
-        slip_new=slip;
         slip_new(id2,:)=[];
 
-        error_new=error;
         error_new(id2,:)=[];
 
-    figure (1)
+    figure (2)
     plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
     hold on
     plot(dist(id2),slip(id2),'-rx','linewidth',1,'DisplayName','Observed')
 
+    end
     end
 
 else
@@ -93,7 +102,7 @@ else
 end
 
 hold off
-figure (2)
+figure (3)
 plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Actual Stations')
 hold on
 plot(dist_new,slip_new,'-rdiamond','linewidth',1,'DisplayName','After Removal')
