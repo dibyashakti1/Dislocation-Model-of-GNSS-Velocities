@@ -7,7 +7,7 @@
 % Input: File must contain three columns (atleast) 
 % Distance from Fault Trace, Displacement, Uncertainity
 
-% Last modified on: 21 Jan, 2025 by D. Panda
+% Last modified on: 24 Mar, 2025 by D. Panda
 
 
 clear all
@@ -25,10 +25,12 @@ if width(Fault_slip)<3
     error('File should contain at least 3 columns (Distance, Displacement, Error)')
 else
     disp("Input File contains 3 columns > Distance, Displacement, Error")
+
+%% Define the variables    
 Fault_slip=sortrows(Fault_slip);
-dist=table2array(Fault_slip(:,1));
-slip=table2array(Fault_slip(:,2));
-error=table2array(Fault_slip(:,3));
+dist=table2array(Fault_slip(:,1));  % Perp. distance form fault trace
+slip=table2array(Fault_slip(:,2));  % Slip rate (mm/year)
+error=table2array(Fault_slip(:,4)); % Uncertainity
 plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
 hold on
 errorbar(dist,slip,error,'.b','DisplayName','Observed')
@@ -37,51 +39,58 @@ title('Observed Displacement (mm/year)')
 end
 %%
 
+dist_new = dist;
+slip_new = slip;
+error_new = error;
+
 menuop = menu('EXCLUSION OF ONE OR MORE POINTS FROM CALCULATIONS','YES','NO');
 
 if menuop ==1
-
+    
+    figure(1)
     plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
     hold on
     errorbar(dist,slip,error,'.b','DisplayName','Observed')
 
-    [rx,ry]=getpts;
+    [rx,ry]=getpts(figure(1));
     dist_range=2;
     slip_range=2;
-    id=find(dist<=fix(rx)+dist_range & dist>=fix(rx)-dist_range);
-    id2=find(slip<=fix(ry)+slip_range & slip>=fix(ry)-slip_range);
-
-    if length(id)<length(id2)
+    
+    for k = 1:length(rx)
+        id = [];
+        id2 = [];
+        id = find(dist<=fix(rx(k))+dist_range & dist>=fix(rx(k))-dist_range);
+        id2 = find(slip<=fix(ry(k))+slip_range & slip>=fix(ry(k))-slip_range);
+        if k > 1
+            id = id - (k-1);
+        end
         
-        plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
-        hold on
-        plot(dist(id),slip(id),'-rx','linewidth',1,'DisplayName','Observed')
+        if length(id)<length(id2)
+            
+            plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
+            hold on
+            plot(dist(id),slip(id),'-rx','linewidth',1,'DisplayName','Observed')
 
-        dist_new=dist;
         dist_new(id,:)=[];
 
-        slip_new=slip;
         slip_new(id,:)=[];
 
-        error_new=error;
         error_new(id,:)=[];
 
     else
 
-        dist_new=dist;
         dist_new(id2,:)=[];
 
-        slip_new=slip;
         slip_new(id2,:)=[];
 
-        error_new=error;
         error_new(id2,:)=[];
 
-    figure (1)
+    figure (2)
     plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Observed')
     hold on
     plot(dist(id2),slip(id2),'-rx','linewidth',1,'DisplayName','Observed')
 
+    end
     end
 
 else
@@ -93,7 +102,7 @@ else
 end
 
 hold off
-figure (2)
+figure (3)
 plot(dist,slip,'-bdiamond','linewidth',1,'DisplayName','Actual Stations')
 hold on
 plot(dist_new,slip_new,'-rdiamond','linewidth',1,'DisplayName','After Removal')
@@ -157,7 +166,7 @@ yival=0.2;      % y interval for the mesh
 [X,Y]=meshgrid(min(x2):xival:max(x2),min(y2):yival:max(y2));
 Z=griddata(x2,y2,z2,X,Y);
 
-figure(3),clf
+figure(4),clf
 contourf(X, Y, Z)
 minError = find(Z == min(Z(:)));
 minX=X(minError);
@@ -165,7 +174,7 @@ minY=Y(minError);
 hold on
 plot(minX,minY,'o','color','red')
 
-figure(4),clf
+figure(5),clf
 [uX,uY,uZ]=Okada1992(x,y,z,fault,dip,[0,minX*1e3],minY,type,Mu,Poisson);
 uY(y>0)=uY(y>0)+(minY*cosd(dip1));
 % uY=uY+1;
@@ -175,7 +184,7 @@ errorbar(dist_new,slip_new,error_new,'DisplayName','Observed')
 xlim([-300,300])
 legend ('location','northwest')
 
-figure(5),clf
+figure(6),clf
 nobs=200;
 y=linspace(-500e3,500e3,nobs*2);
 x=0*y;
