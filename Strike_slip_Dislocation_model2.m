@@ -147,7 +147,7 @@ uY=uY+m;
         end
     end
 end
-
+toc
 fprintf('Estimating RMSE by varying fault Slip rate, Locking Depth, Dip, Vertical Offset...Done\n')
 
 %%
